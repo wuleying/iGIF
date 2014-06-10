@@ -1,23 +1,21 @@
 <?php $this->load->view('layout/header'); ?>
-
 <script type="text/javascript" src="<?php echo base_url('/js/plupload/plupload.full.min.js'); ?>"></script>
-
 <div class="well well-lg margin12">
-	<form method="post" action="<?php echo base_url('/user/add'); ?>">
-		<input type="hidden" name="action" value="1" />
-		<p>
-		<div id="filelist">Your browser doesn't have Flash, Silverlight or HTML5 support.</div>
+	<form method="post" action="<?php echo base_url('/user/doadd'); ?>">
+		<p class="uploader-box">
+		<div id="filelist"></div>
 		<div id="container">
-			<a id="pickfiles" class="btn btn-primary" href="javascript:;">选择文件</a>
-			<a id="uploadfiles" class="btn btn-primary" href="javascript:;">上传</a>
+			<button id="pickfiles" class="btn btn-primary">选择文件</button>
+			<button id="uploadfile" class="btn btn-warning disabled">开始上传</button>
+			<span id="hint">请选择文件</span>
 		</div>
 		<div id="console"></div>
 		</p>
 		<p>
-			<label for="description">描述</label>
+			<label for="description">简介</label>
 			<textarea name="description" id="description" class="form-control" rows="5"></textarea>
 		</p>
-		<p><button type="submit" class="btn btn-lg btn-primary btn-block">确定</button></p>
+		<p><button type="submit" class="btn btn-lg btn-primary btn-block">提交</button></p>
 	</form>
 </div>
 
@@ -37,29 +35,46 @@
 		},
 		init: {
 			PostInit: function() {
-				document.getElementById('filelist').innerHTML = '';
-
-				document.getElementById('uploadfiles').onclick = function() {
+				$("#filelist").html('');
+				$('#uploadfile').click(function() {
 					uploader.start();
 					return false;
-				};
+				});
 			},
 			FilesAdded: function(up, files) {
 				plupload.each(files, function(file) {
-					document.getElementById('filelist').innerHTML += '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b></div>';
+					var html = '<div class="progress progress-striped active">';
+					html += '<div id="progress" class="progress-bar progress-bar-success"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">';
+					html += '</div>';
+					html += '<div id="uploadinfo"></div>';
+					html += '</div>';
+					$("#filelist").html(html);
+					$("#uploadinfo").html('<div id="' + file.id + '"><span>' + file.name + ' [' + plupload.formatSize(file.loaded) + '/' + plupload.formatSize(file.size) + ']</span><strong>' + file.percent + '%</strong></div>');
+					$("#uploadfile").removeClass("disabled");
+					$("#hint").html("请点击 开始上传 按钮");
 				});
 			},
 			UploadProgress: function(up, file) {
-				document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = '<span>' + file.percent + "%</span>";
+				$("#progress").css('width', file.percent + '%');
+				$("#uploadinfo").html('<div id="' + file.id + '"><span>' + file.name + ' [' + plupload.formatSize(file.loaded) + '/' + plupload.formatSize(file.size) + ']</span><strong>' + file.percent + '%</strong></div>');
+				$("#hint").html("文件上传中...");
+			},
+			FileUploaded: function(up, file, info) {
+				$("#hint").html("上传成功");
 			},
 			Error: function(up, err) {
-				document.getElementById('console').innerHTML += "\nError #" + err.code + ": " + err.message;
+				$("#hint").html("出错了：" + err.message);
+				$('#filelist').html('');
+				$('#uploadfiles').addClass('disable');
+				up.refresh();
+				if (up.files.length > 0)
+				{
+					up.removeFile(up.getFile(up.files[up.files.length - 1].id));
+				}
 			}
 		}
 	});
 
 	uploader.init();
-
 </script>
-
 <?php $this->load->view('layout/footer'); ?>

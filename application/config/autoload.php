@@ -73,7 +73,8 @@ $autoload['helper'] = array(
 	'date',
 	'string',
 	'cookie',
-	'security'
+	'security',
+	'file'
 );
 
 

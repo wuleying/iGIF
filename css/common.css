@@ -1,3 +1,10 @@
 .margin12 {margin:12px;}
 .margin-left-16{margin-left:16px;}
 .margin-right-16{margin-right:16px;}
+
+/* Upload */
+.progress, #progress{height:40px;line-height: 40px;text-align: center;}
+#uploadinfo {color:#369;position: absolute;}
+#uploadinfo span {padding:0 12px;}
+#uploadfile {margin-left:8px;}
+#hint {margin-left:18px;}

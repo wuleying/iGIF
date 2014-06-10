@@ -361,5 +361,14 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 
+/*
+  |--------------------------------------------------------------------------
+  | Custom
+  |--------------------------------------------------------------------------
+  |
+  |
+ */
+$config['attachment_dir'] = 'd:' . DS . 'httproot' . DS . 'iGIF' . DS . 'attachment';
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */
