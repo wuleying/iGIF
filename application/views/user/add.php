@@ -2,6 +2,7 @@
 <script type="text/javascript" src="<?php echo base_url('/js/plupload/plupload.full.min.js'); ?>"></script>
 <div class="well well-lg margin12">
 	<form method="post" action="<?php echo base_url('/user/doadd'); ?>">
+		<input type="hidden" name="id" id="gifid" value="0" />
 		<p class="uploader-box">
 		<div id="filelist"></div>
 		<div id="container">
@@ -43,7 +44,7 @@
 			},
 			FilesAdded: function(up, files) {
 				plupload.each(files, function(file) {
-					var html = '<div class="progress progress-striped active">';
+					var html = '<div class="progress progress-striped">';
 					html += '<div id="progress" class="progress-bar progress-bar-success"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">';
 					html += '</div>';
 					html += '<div id="uploadinfo"></div>';
@@ -58,9 +59,12 @@
 				$("#progress").css('width', file.percent + '%');
 				$("#uploadinfo").html('<div id="' + file.id + '"><span>' + file.name + ' [' + plupload.formatSize(file.loaded) + '/' + plupload.formatSize(file.size) + ']</span><strong>' + file.percent + '%</strong></div>');
 				$("#hint").html("文件上传中...");
+				$("#uploadfile").addClass("disabled");
 			},
 			FileUploaded: function(up, file, info) {
 				$("#hint").html("上传成功");
+				var result = eval('(' + info.response + ')');
+				$("#gifid").attr("value", result.id);
 			},
 			Error: function(up, err) {
 				$("#hint").html("出错了：" + err.message);
@@ -74,6 +78,16 @@
 			}
 		}
 	});
+
+	function json2str(obj)
+	{
+		var S = [];
+		for (var i in obj) {
+			obj[i] = typeof obj[i] == 'string' ? '"' + obj[i] + '"' : (typeof obj[i] == 'object' ? json2str(obj[i]) : obj[i]);
+			S.push(i + ':' + obj[i]);
+		}
+		return '{' + S.join(',') + '}';
+	}
 
 	uploader.init();
 </script>

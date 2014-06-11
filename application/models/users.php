@@ -37,7 +37,7 @@ class Users extends CI_Model
 			'groupid' => USER_GROUP_GENERAL,
 			'password' => $hashPassword,
 			'salt' => $salt,
-			'registertime' => now()
+			'registertime' => TIME_NOW
 		));
 	}
 

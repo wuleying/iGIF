@@ -64,7 +64,9 @@ class User extends CI_Controller
 		header("Pragma: no-cache");
 		@set_time_limit(300);
 		$this->load->library('string');
-		$targetDir = $this->config->item('attachment_dir') . DS . $this->string->makeUserDir($this->_userInfo['userid']);
+		// 用户目录 /00/00/00/01/2014/06
+		$fileDir = $this->string->makeUserDir($this->_userInfo['userid']) . DS . mdate('%Y', TIME_NOW) . DS . mdate('%m', TIME_NOW);
+		$targetDir = $this->config->item('attachment_dir') . DS . $fileDir;
 		if (!file_exists($targetDir))
 		{
 			@mkdir($targetDir, DIR_READ_MODE, TRUE);
@@ -77,34 +79,33 @@ class User extends CI_Controller
 		{
 			$ext = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
 		}
+		$file = $fileDir . DS . TIME_NOW . '.' . $ext;
+		$filePath = $this->config->item('attachment_dir') . DS . $file;
 
-		$filePath = $targetDir . DS . time() . '.' . $ext;
-
-		$chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
-		$chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 0;
-
+		$chunk = isset($_REQUEST["chunk"]) ? (int) $_REQUEST["chunk"] : 0;
+		$chunks = isset($_REQUEST["chunks"]) ? (int) $_REQUEST["chunks"] : 0;
 		if (!$out = @fopen("{$filePath}.part", $chunks ? "ab" : "wb"))
 		{
-			die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
+			echo json_encode(array('error' => array('code' => 102, 'message' => 'Failed to open output stream')));
 		}
 
 		if (!empty($_FILES))
 		{
 			if ($_FILES["file"]["error"] || !is_uploaded_file($_FILES["file"]["tmp_name"]))
 			{
-				die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
+				echo json_encode(array('error' => array('code' => 103, 'message' => 'Failed to move uploaded file.')));
 			}
 
 			if (!$in = @fopen($_FILES["file"]["tmp_name"], "rb"))
 			{
-				die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
+				echo json_encode(array('error' => array('code' => 101, 'message' => 'Failed to open input stream.')));
 			}
 		}
 		else
 		{
 			if (!$in = @fopen("php://input", "rb"))
 			{
-				die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
+				echo json_encode(array('error' => array('code' => 101, 'message' => 'Failed to open input stream.')));
 			}
 		}
 
@@ -121,7 +122,18 @@ class User extends CI_Controller
 			rename("{$filePath}.part", $filePath);
 		}
 
-		die('{"jsonrpc" : "2.0", "result" : ' . $filePath . ', "id" : "id"}');
+		// 写入数据库
+		$this->load->model('Gifs');
+		$id = $this->Gifs->newGif($this->_userInfo['userid'], $file);
+
+		if (!$id)
+		{
+			echo json_encode(array('error' => array('code' => 104, 'message' => 'Failed to save data.')));
+		}
+		else
+		{
+			echo json_encode(array('path' => $file, 'id' => $id));
+		}
 	}
 
 	/**
