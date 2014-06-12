@@ -368,7 +368,7 @@ $config['proxy_ips'] = '';
   |
   |
  */
-$config['attachment_dir'] = 'd:' . DS . 'httproot' . DS . 'iGIF' . DS . 'attachment';
+$config['attachment_dir'] = 'D:' . DS . 'attachment' . DS . 'iGIF';
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

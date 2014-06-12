@@ -15,6 +15,10 @@ class User extends CI_Controller
 	// 用户信息
 	private $_userInfo = array();
 
+	/**
+	 * 构造函数
+	 *
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -23,11 +27,40 @@ class User extends CI_Controller
 		$email = $this->input->cookie('email');
 		$password = $this->input->cookie('password');
 
+		// 加载模型
 		$this->load->model('Users');
+		$this->load->model('Gifs');
+
+
 		$this->_userInfo = $this->Users->getUserByEmail($email);
 		if (empty($this->_userInfo) || $this->_userInfo['password'] != $password)
 		{
 			redirect(base_url('/signin'));
+		}
+		else
+		{
+			$data['userInfo'] = $this->_userInfo;
+
+			// 排除页面
+			$exclude = array(
+				'upload',
+				'doadd'
+			);
+
+			if (!in_array($this->router->method, $exclude))
+			{
+				// 页面标题
+				$titles = array(
+					'index' => '用户首页',
+					'add' => '上传',
+					'profiled' => $this->_userInfo['email'] . ' - 个人资料'
+				);
+
+				$data['title'] = $titles[$this->router->method];
+				unset($titles);
+				// 加载头部模板
+				$this->load->view('layout/header', $data);
+			}
 		}
 	}
 
@@ -37,8 +70,7 @@ class User extends CI_Controller
 	 */
 	public function index()
 	{
-		$data['title'] = '用户首页';
-		$this->load->view('user/index', $data);
+		$this->load->view('user/index');
 	}
 
 	/**
@@ -47,8 +79,26 @@ class User extends CI_Controller
 	 */
 	public function add()
 	{
-		$data['title'] = '上传';
-		$this->load->view('user/add', $data);
+		$this->load->view('user/add');
+	}
+
+	/**
+	 * 提交数据
+	 *
+	 */
+	public function doadd()
+	{
+		$id = (int) $this->input->post('id');
+		$description = $this->input->post('description');
+
+		if(empty($id))
+		{
+			show_error('参数不正确，请<a href="' . base_url('/user/add') . '">返回</a>');
+		}
+
+		$this->Gifs->saveDescription($id, $description);
+
+		redirect('/user/add');
 	}
 
 	/**
@@ -123,7 +173,6 @@ class User extends CI_Controller
 		}
 
 		// 写入数据库
-		$this->load->model('Gifs');
 		$id = $this->Gifs->newGif($this->_userInfo['userid'], $file);
 
 		if (!$id)
@@ -142,8 +191,7 @@ class User extends CI_Controller
 	 */
 	public function profiled()
 	{
-		$data['title'] = '个人资料';
-		$this->load->view('user/profiled', $data);
+		$this->load->view('user/profiled');
 	}
 
 }

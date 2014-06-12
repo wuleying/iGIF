@@ -39,4 +39,19 @@ class Gifs extends CI_Model
 		return $this->db->insert_id();
 	}
 
+	/**
+	 * 更新图片说明
+	 *
+	 * @param integer $id
+	 * @param string $description
+	 *
+	 */
+	public function saveDescription($id, $description)
+	{
+		$this->db->where('gifid', $id);
+		$this->db->update('gifs', array(
+			'description' => $description
+		));
+	}
+
 }

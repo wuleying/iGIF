@@ -1,4 +1,3 @@
-<?php $this->load->view('layout/header'); ?>
 <script type="text/javascript" src="<?php echo base_url('/js/plupload/plupload.full.min.js'); ?>"></script>
 <div class="well well-lg margin12">
 	<form method="post" action="<?php echo base_url('/user/doadd'); ?>">
@@ -16,7 +15,7 @@
 			<label for="description">简介</label>
 			<textarea name="description" id="description" class="form-control" rows="5"></textarea>
 		</p>
-		<p><button type="submit" class="btn btn-lg btn-primary btn-block">提交</button></p>
+		<p><button type="submit" id="submit" class="btn btn-lg btn-primary btn-block disabled">提交</button></p>
 	</form>
 </div>
 
@@ -52,6 +51,7 @@
 					$("#filelist").html(html);
 					$("#uploadinfo").html('<div id="' + file.id + '"><span>' + file.name + ' [' + plupload.formatSize(file.loaded) + '/' + plupload.formatSize(file.size) + ']</span><strong>' + file.percent + '%</strong></div>');
 					$("#uploadfile").removeClass("disabled");
+					$("#submit").addClass("disabled");
 					$("#hint").html("请点击 开始上传 按钮");
 				});
 			},
@@ -65,6 +65,7 @@
 				$("#hint").html("上传成功");
 				var result = eval('(' + info.response + ')');
 				$("#gifid").attr("value", result.id);
+				$("#submit").removeClass("disabled");
 			},
 			Error: function(up, err) {
 				$("#hint").html("出错了：" + err.message);
