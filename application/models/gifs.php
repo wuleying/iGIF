@@ -26,32 +26,18 @@ class Gifs extends CI_Model
 	 *
 	 * @param integer $userid
 	 * @param string $path
+	 * @param string $description
 	 * @return integer
 	 *
 	 */
-	public function newGif($userid, $path)
+	public function newGif($userid, $path, $description)
 	{
 		$this->db->insert('gifs', array(
 			'path' => $path,
+			'description' => $description,
 			'userid' => $userid,
 			'dateline' => TIME_NOW
 		));
 		return $this->db->insert_id();
 	}
-
-	/**
-	 * 更新图片说明
-	 *
-	 * @param integer $id
-	 * @param string $description
-	 *
-	 */
-	public function saveDescription($id, $description)
-	{
-		$this->db->where('gifid', $id);
-		$this->db->update('gifs', array(
-			'description' => $description
-		));
-	}
-
 }

@@ -21,20 +21,22 @@
 					<ul class="nav navbar-nav  navbar-left">
 						<li<?php if ('home' == $this->router->class && 'index' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url(); ?>">最新</a></li>
 						<li<?php if ('home' == $this->router->class && 'hot' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/hot'); ?>">热门</a></li>
-						<?php if ($userInfo) : ?>
+						<?php if (isset($userInfo) && !empty($userInfo)) : ?>
 							<li<?php if ('user' == $this->router->class && 'add' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/add'); ?>">上传</a></li>
 							<li class="dropdown">
 
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $userInfo['email']; ?><b class="caret"></b></a>
 								<ul class="dropdown-menu" role="menu">
+									<li><a href="<?php echo base_url('/user/uploads'); ?>">我的上传</a></li>
+									<li><a href="<?php echo base_url('/user/favorites'); ?>">我的收藏</a></li>
 									<li><a href="<?php echo base_url('/user/profiled'); ?>">个人资料</a></li>
 									<li class="divider"></li>
 									<li><a href="<?php echo base_url('/logout'); ?>">退出</a></li>
 								</ul>
 							</li>
 						<?php else: ?>
-							<li><a href="<?php echo base_url('/register'); ?>">注册</a></li>
-							<li><a href="<?php echo base_url('/signin'); ?>">登录</a></li>
+							<li<?php if ('register' == $this->router->class): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/register'); ?>">注册</a></li>
+							<li<?php if ('signin' == $this->router->class): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/signin'); ?>">登录</a></li>
 						<?php endif; ?>
 					</ul>
 				</div>

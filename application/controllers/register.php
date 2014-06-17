@@ -50,6 +50,10 @@ class Register extends CI_Controller
 		}
 		else
 		{
+			$data['title'] = '用户注册';
+			// 加载头部模板
+			$this->load->view('layout/header', $data);
+			// 加载模板
 			$this->load->view('register/index');
 		}
 	}

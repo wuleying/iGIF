@@ -1,7 +1,7 @@
 <script type="text/javascript" src="<?php echo base_url('/js/plupload/plupload.full.min.js'); ?>"></script>
 <div class="well well-lg margin12">
-	<form method="post" action="<?php echo base_url('/user/doadd'); ?>">
-		<input type="hidden" name="id" id="gifid" value="0" />
+	<form method="post" action="<?php echo base_url('/user/doadd'); ?>" onsubmit="return checkForm();">
+		<input type="hidden" name="path" id="gifpath" value="" />
 		<p class="uploader-box">
 		<div id="filelist"></div>
 		<div id="container">
@@ -15,7 +15,7 @@
 			<label for="description">简介</label>
 			<textarea name="description" id="description" class="form-control" rows="5"></textarea>
 		</p>
-		<p><button type="submit" id="submit" class="btn btn-lg btn-primary btn-block disabled">提交</button></p>
+		<p><button type="submit" id="submit" class="btn btn-lg btn-primary btn-block">提交</button></p>
 	</form>
 </div>
 
@@ -51,7 +51,6 @@
 					$("#filelist").html(html);
 					$("#uploadinfo").html('<div id="' + file.id + '"><span>' + file.name + ' [' + plupload.formatSize(file.loaded) + '/' + plupload.formatSize(file.size) + ']</span><strong>' + file.percent + '%</strong></div>');
 					$("#uploadfile").removeClass("disabled");
-					$("#submit").addClass("disabled");
 					$("#hint").html("请点击 开始上传 按钮");
 				});
 			},
@@ -64,8 +63,7 @@
 			FileUploaded: function(up, file, info) {
 				$("#hint").html("上传成功");
 				var result = eval('(' + info.response + ')');
-				$("#gifid").attr("value", result.id);
-				$("#submit").removeClass("disabled");
+				$("#gifpath").attr("value", result.path);
 			},
 			Error: function(up, err) {
 				$("#hint").html("出错了：" + err.message);
@@ -80,14 +78,22 @@
 		}
 	});
 
-	function json2str(obj)
+	// 检查表单
+	function checkForm()
 	{
-		var S = [];
-		for (var i in obj) {
-			obj[i] = typeof obj[i] == 'string' ? '"' + obj[i] + '"' : (typeof obj[i] == 'object' ? json2str(obj[i]) : obj[i]);
-			S.push(i + ':' + obj[i]);
+		if($("#gifpath").attr("value") == "")
+		{
+			alert("请上传图片");
+			return false;
 		}
-		return '{' + S.join(',') + '}';
+
+		if($("#description").val() == "")
+		{
+			alert("请填写简介");
+			$("#description").focus();
+			return false;
+		}
+		return true;
 	}
 
 	uploader.init();

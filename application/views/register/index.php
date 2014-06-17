@@ -1,4 +1,3 @@
-<?php $this->load->view('layout/simpleheader'); ?>
 <div class="margin12">
 	<h1 class="text-center">用户注册</h1>
 	<form class="form-signin" role="form" method="post" action="<?php echo base_url('/register'); ?>">
@@ -16,8 +15,8 @@
 		</div>
 	<?php endif; ?>
 	<p class="text-center">
-		<a href="<?php echo base_url('/signin'); ?>" title="已有账号" class="btn btn-success">已有账号</a>
-		<a href="<?php echo base_url('/resetpassword'); ?>" title="找回密码" class="btn btn-warning margin-left-16">找回密码</a>
+		<a href="<?php echo base_url('/signin'); ?>" title="已有账号" class="btn">已有账号</a>
+		<a href="<?php echo base_url('/resetpassword'); ?>" title="找回密码" class="btn margin-left-16">找回密码</a>
 	</p>
 </div>
-<?php $this->load->view('layout/simplefooter'); ?>
+<?php $this->load->view('layout/footer'); ?>

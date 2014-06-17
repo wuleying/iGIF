@@ -39,28 +39,19 @@ class User extends CI_Controller
 		}
 		else
 		{
-			$data['userInfo'] = $this->_userInfo;
+			$data['userInfo'] = & $this->_userInfo;
 
-			// 排除页面
-			$exclude = array(
-				'upload',
-				'doadd'
+			// 页面标题
+			$titles = array(
+				'index' => '用户首页',
+				'add' => '上传',
+				'profiled' => $this->_userInfo['email'] . ' - 个人资料'
 			);
 
-			if (!in_array($this->router->method, $exclude))
-			{
-				// 页面标题
-				$titles = array(
-					'index' => '用户首页',
-					'add' => '上传',
-					'profiled' => $this->_userInfo['email'] . ' - 个人资料'
-				);
-
-				$data['title'] = $titles[$this->router->method];
-				unset($titles);
-				// 加载头部模板
-				$this->load->view('layout/header', $data);
-			}
+			$data['title'] = (isset($titles[$this->router->method])) ? $titles[$this->router->method] : '';
+			unset($titles);
+			// 加载头部模板
+			$this->load->view('layout/header', $data);
 		}
 	}
 
@@ -88,17 +79,38 @@ class User extends CI_Controller
 	 */
 	public function doadd()
 	{
-		$id = (int) $this->input->post('id');
+		$path = $this->input->post('path');
 		$description = $this->input->post('description');
 
-		if(empty($id))
+		if (empty($path))
 		{
-			show_error('参数不正确，请<a href="' . base_url('/user/add') . '">返回</a>');
+			show_error('请上传图片，请<a href="' . base_url('/user/add') . '">返回</a>');
 		}
 
-		$this->Gifs->saveDescription($id, $description);
+		if (empty($description))
+		{
+			show_error('请填写简介，请<a href="' . base_url('/user/add') . '">返回</a>');
+		}
 
-		redirect('/user/add');
+		$gifid = $this->Gifs->newGif($this->_userInfo['userid'], $path, $description);
+
+		if (empty($gifid))
+		{
+			show_error('提交失败，请<a href="' . base_url('/user/add') . '">返回</a>');
+		}
+		else
+		{
+			redirect('/user/addsuccess');
+		}
+	}
+
+	/**
+	 * 提交成功
+	 *
+	 */
+	public function addsuccess()
+	{
+		show_error('提交成功能，请耐心等待审核，请<a href="' . base_url('/user/add') . '">返回</a>');
 	}
 
 	/**
@@ -115,7 +127,8 @@ class User extends CI_Controller
 		@set_time_limit(300);
 		$this->load->library('string');
 		// 用户目录 /00/00/00/01/2014/06
-		$fileDir = $this->string->makeUserDir($this->_userInfo['userid']) . DS . mdate('%Y', TIME_NOW) . DS . mdate('%m', TIME_NOW);
+		$fileDir = $this->string->makeUserDir($this->_userInfo['userid']) . DS . mdate('%Y', TIME_NOW) . DS . mdate('%m', TIME_NOW) . DS . mdate('%d', TIME_NOW);
+		;
 		$targetDir = $this->config->item('attachment_dir') . DS . $fileDir;
 		if (!file_exists($targetDir))
 		{
@@ -172,17 +185,7 @@ class User extends CI_Controller
 			rename("{$filePath}.part", $filePath);
 		}
 
-		// 写入数据库
-		$id = $this->Gifs->newGif($this->_userInfo['userid'], $file);
-
-		if (!$id)
-		{
-			echo json_encode(array('error' => array('code' => 104, 'message' => 'Failed to save data.')));
-		}
-		else
-		{
-			echo json_encode(array('path' => $file, 'id' => $id));
-		}
+		echo json_encode(array('path' => $file));
 	}
 
 	/**
@@ -191,7 +194,74 @@ class User extends CI_Controller
 	 */
 	public function profiled()
 	{
-		$this->load->view('user/profiled');
+		$action = (int) $this->input->post('action');
+
+		// 用户提交数据
+		if ($action)
+		{
+			$this->load->library('form_validation');
+			$this->form_validation->set_rules('username', '呢称', 'required|min_length[2]|max_length[16]|is_unique[users.username]');
+			if(empty($this->_userInfo['urltoken']))
+			{
+				$this->form_validation->set_rules('urltoken', '个性网址', 'required|min_length[4]|max_length[32]|alpha|is_unique[users.urltoken]');
+			}
+			$this->form_validation->set_message('required', '请填写%s');
+			$this->form_validation->set_message('min_length', '%s小于%s个字符，请重新填写');
+			$this->form_validation->set_message('max_length', '%s大于%s个字符，请重新填写');
+			$this->form_validation->set_message('alpha', '%s只允许由英文字母组成，请重新填写');
+			$this->form_validation->set_message('is_unique', '此%s已经存在，请重新填写');
+
+
+
+			if ($this->form_validation->run() == FALSE)
+			{
+				$this->load->view('user/profiled');
+			}
+			else
+			{
+				$username = $this->input->post('username', TRUE);
+				$urltoken = $this->input->post('urltoken', TRUE);
+
+				// 加载模型
+				$this->load->model('Users');
+				// 更新用户信息
+				$this->Users->saveUserProfiled($this->_userInfo['userid'], $username, $urltoken);
+
+				redirect('/user/profiled');
+			}
+		}
+		else
+		{
+			$data['userInfo'] = & $this->_userInfo;
+			$this->load->view('user/profiled', $data);
+		}
+	}
+
+	/**
+	 * 修改密码
+	 *
+	 */
+	public function password()
+	{
+		$this->load->view('user/password');
+	}
+
+	/**
+	 *  我的上传
+	 *
+	 */
+	public function uploads()
+	{
+		$this->load->view('user/uploads');
+	}
+
+	/**
+	 *  我的上传
+	 *
+	 */
+	public function favorites()
+	{
+		$this->load->view('user/favorites');
 	}
 
 }

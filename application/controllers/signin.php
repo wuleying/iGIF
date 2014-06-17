@@ -58,6 +58,11 @@ class Signin extends CI_Controller
 				}
 			}
 
+			$data['userInfo'] = & $userInfo;
+			$data['title'] = '用户注册';
+			// 加载头部模板
+			$this->load->view('layout/header', $data);
+			// 加载模板
 			$this->load->view('signin/index');
 		}
 	}

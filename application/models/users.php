@@ -61,4 +61,30 @@ class Users extends CI_Model
 		return $query->row_array();
 	}
 
+	/**
+	 * 保存用户信息
+	 *
+	 * @param integer $userid
+	 * @param string $username
+	 * @param string $urltoken
+	 * @return
+	 *
+	 */
+	public function saveUserProfiled($userid, $username, $urltoken = '')
+	{
+		if (empty($userid) || empty($username))
+		{
+			return;
+		}
+
+		$data['username'] = $username;
+		if($urltoken)
+		{
+			$data['urltoken'] = $urltoken;
+		}
+
+		$this->db->where('userid', $userid);
+		$this->db->update('users', $data);
+	}
+
 }

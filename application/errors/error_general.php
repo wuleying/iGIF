@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>出错了！</title>
+		<title>提示信息！</title>
 		<style type="text/css">
 
 			::selection{ background-color: #690; color: white; }
@@ -56,7 +56,7 @@
 	</head>
 	<body>
 		<div id="container">
-			<h1>出错了！</h1>
+			<h1>提示信息！</h1>
 			<?php echo $message; ?>
 		</div>
 	</body>
