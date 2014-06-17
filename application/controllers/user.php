@@ -39,19 +39,31 @@ class User extends CI_Controller
 		}
 		else
 		{
-			$data['userInfo'] = & $this->_userInfo;
 
-			// 页面标题
-			$titles = array(
-				'index' => '用户首页',
-				'add' => '上传',
-				'profiled' => $this->_userInfo['email'] . ' - 个人资料'
+
+			// 排除页面
+			$exclude = array(
+				'upload',
+				'doadd'
 			);
 
-			$data['title'] = (isset($titles[$this->router->method])) ? $titles[$this->router->method] : '';
-			unset($titles);
-			// 加载头部模板
-			$this->load->view('layout/header', $data);
+			$data['userInfo'] = & $this->_userInfo;
+
+
+			if (!in_array($this->router->method, $exclude))
+			{
+				// 页面标题
+				$titles = array(
+					'index' => '用户首页',
+					'add' => '上传',
+					'profiled' => $this->_userInfo['email'] . ' - 个人资料'
+				);
+
+				$data['title'] = (isset($titles[$this->router->method])) ? $titles[$this->router->method] : '';
+				unset($titles);
+				// 加载头部模板
+				$this->load->view('layout/header', $data);
+			}
 		}
 	}
 
@@ -201,7 +213,7 @@ class User extends CI_Controller
 		{
 			$this->load->library('form_validation');
 			$this->form_validation->set_rules('username', '呢称', 'required|min_length[2]|max_length[16]|is_unique[users.username]');
-			if(empty($this->_userInfo['urltoken']))
+			if (empty($this->_userInfo['urltoken']))
 			{
 				$this->form_validation->set_rules('urltoken', '个性网址', 'required|min_length[4]|max_length[32]|alpha|is_unique[users.urltoken]');
 			}
