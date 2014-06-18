@@ -31,7 +31,6 @@ class User extends CI_Controller
 		$this->load->model('Users');
 		$this->load->model('Gifs');
 
-
 		$this->_userInfo = $this->Users->getUserByEmail($email);
 		if (empty($this->_userInfo) || $this->_userInfo['password'] != $password)
 		{
@@ -56,7 +55,10 @@ class User extends CI_Controller
 				$titles = array(
 					'index' => '用户首页',
 					'add' => '上传',
-					'profiled' => $this->_userInfo['email'] . ' - 个人资料'
+					'profiled' => '账号',
+					'password' => '修改密码',
+					'uploads' => '我的上传',
+					'favorites' => '我的收藏',
 				);
 
 				$data['title'] = (isset($titles[$this->router->method])) ? $titles[$this->router->method] : '';
@@ -255,7 +257,64 @@ class User extends CI_Controller
 	 */
 	public function password()
 	{
-		$this->load->view('user/password');
+		$action = (int) $this->input->post('action');
+
+		// 用户提交数据
+		if ($action)
+		{
+			$this->load->library('form_validation');
+			$this->form_validation->set_rules('oldpassword', '旧密码', 'callback_check_password');
+			$this->form_validation->set_rules('newpassword', '新密码', 'required|min_length[6]|max_length[16]');
+			$this->form_validation->set_rules('repassword', '重复密码', 'required|min_length[6]|max_length[16]|matches[newpassword]');
+			$this->form_validation->set_message('check_password', '旧密码不匹配，请重新填写');
+			$this->form_validation->set_message('required', '请填写%s');
+			$this->form_validation->set_message('min_length', '%s小于%s个字符，请重新填写');
+			$this->form_validation->set_message('max_length', '%s大于%s个字符，请重新填写');
+			$this->form_validation->set_message('matches', '两次密码输入不一致');
+
+			if ($this->form_validation->run() == FALSE)
+			{
+				$this->load->view('user/password');
+			}
+			else
+			{
+				show_error('修改密码成功，请<a href="' . base_url('/signin') . '">重新登录</a>');
+			}
+		}
+		else
+		{
+			$this->load->view('user/password');
+		}
+	}
+
+	/**
+	 * 检查用户密码
+	 *
+	 */
+	public function check_password()
+	{
+		$oldPassword = $this->input->post('oldpassword', TRUE);
+		if (empty($oldPassword))
+		{
+			show_error('非法请求');
+		}
+
+		// 检查密码
+		$hashPassword = do_hash(do_hash($oldPassword) . $this->_userInfo['salt']);
+		if ($hashPassword == $this->_userInfo['password'])
+		{
+			// 加载模型
+			$this->load->model('Users');
+			$newPassword = $this->input->post('newpassword', TRUE);
+			$hashNewPassword = do_hash(do_hash($newPassword) . $this->_userInfo['salt']);
+			$this->Users->changePassword($this->_userInfo['userid'], $hashNewPassword);
+
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 	/**

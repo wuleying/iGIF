@@ -78,11 +78,30 @@ class Users extends CI_Model
 		}
 
 		$data['username'] = $username;
-		if($urltoken)
+		if ($urltoken)
 		{
 			$data['urltoken'] = $urltoken;
 		}
 
+		$this->db->where('userid', $userid);
+		$this->db->update('users', $data);
+	}
+
+	/**
+	 * 修改密码
+	 *
+	 * @param integer $userid
+	 * @param string $password
+	 * @return
+	 *
+	 */
+	public function changePassword($userid, $password)
+	{
+		if (empty($userid) || empty($password))
+		{
+			return;
+		}
+		$data['password'] = $password;
 		$this->db->where('userid', $userid);
 		$this->db->update('users', $data);
 	}

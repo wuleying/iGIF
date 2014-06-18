@@ -20,6 +20,8 @@ class Register extends CI_Controller
 	{
 		$action = (int) $this->input->post('action', TRUE);
 
+		$data['title'] = '用户注册';
+
 		// 当用户提交数据
 		if ($action)
 		{
@@ -34,6 +36,8 @@ class Register extends CI_Controller
 
 			if ($this->form_validation->run() == FALSE)
 			{
+				// 加载模板
+				$this->load->view('layout/header', $data);
 				$this->load->view('register/index');
 			}
 			else
@@ -50,10 +54,8 @@ class Register extends CI_Controller
 		}
 		else
 		{
-			$data['title'] = '用户注册';
-			// 加载头部模板
-			$this->load->view('layout/header', $data);
 			// 加载模板
+			$this->load->view('layout/header', $data);
 			$this->load->view('register/index');
 		}
 	}

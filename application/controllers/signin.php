@@ -19,6 +19,8 @@ class Signin extends CI_Controller
 	public function index()
 	{
 		$action = (int) $this->input->post('action', TRUE);
+		$data['title'] = '用户登录';
+
 		// 当用户提交数据
 		if ($action)
 		{
@@ -33,6 +35,7 @@ class Signin extends CI_Controller
 			// 登录失败
 			if ($this->form_validation->run() == FALSE)
 			{
+				$this->load->view('layout/header', $data);
 				$this->load->view('signin/index');
 			}
 			// 登录成功
@@ -59,7 +62,6 @@ class Signin extends CI_Controller
 			}
 
 			$data['userInfo'] = & $userInfo;
-			$data['title'] = '用户注册';
 			// 加载头部模板
 			$this->load->view('layout/header', $data);
 			// 加载模板
@@ -98,7 +100,6 @@ class Signin extends CI_Controller
 		{
 			$this->input->set_cookie('email', $email, 0);
 			$this->input->set_cookie('password', $hashPassword, 0);
-			var_dump($this->input->cookie('email'));
 			return TRUE;
 		}
 		else
