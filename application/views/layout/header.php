@@ -21,10 +21,21 @@
 					<ul class="nav navbar-nav  navbar-left">
 						<li<?php if ('home' == $this->router->class && 'index' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url(); ?>">最新</a></li>
 						<li<?php if ('home' == $this->router->class && 'hot' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/hot'); ?>">热门</a></li>
+
 						<?php if (isset($userInfo) && !empty($userInfo)) : ?>
 							<li<?php if ('user' == $this->router->class && 'add' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/add'); ?>">上传</a></li>
-							<li class="dropdown">
 
+							<?php if (USER_GROUP_ADMIN == $userInfo['groupid']) : ?>
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">管理<b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="<?php echo base_url('/admin/review'); ?>">审核图片</a></li>
+										<li><a href="<?php echo base_url('/admin/users'); ?>">管理用户</a></li>
+									</ul>
+								</li>
+							<?php endif; ?>
+
+							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $userInfo['email']; ?><b class="caret"></b></a>
 								<ul class="dropdown-menu" role="menu">
 									<li><a href="<?php echo base_url('/user/uploads'); ?>">我的上传</a></li>
@@ -37,7 +48,7 @@
 						<?php else: ?>
 							<li<?php if ('register' == $this->router->class): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/register'); ?>">注册</a></li>
 							<li<?php if ('signin' == $this->router->class): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/signin'); ?>">登录</a></li>
-						<?php endif; ?>
+							<?php endif; ?>
 					</ul>
 				</div>
 			</nav>

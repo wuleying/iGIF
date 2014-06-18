@@ -64,5 +64,18 @@ define('USER_GROUP_GENERAL', 2);
 // 封禁用户
 define('USER_GROUP_BAN', 3);
 
+/*
+  |--------------------------------------------------------------------------
+  | Image status
+  |--------------------------------------------------------------------------
+  |
+ */
+// 待审核
+define('IMAGE_STATUS_PENDING', 0);
+// 已通过
+define('IMAGE_STATUS_REVIEWED', 1);
+// 未通过
+define('IMAGE_STATUS_FAILED', 2);
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

@@ -93,6 +93,12 @@ class Signin extends CI_Controller
 			return FALSE;
 		}
 
+		// 封禁用户
+		if(USER_GROUP_BAN == $userInfo['groupid'])
+		{
+			show_error('您已被封禁，没有权限访问此页面，<a href="' . base_url() . '">返回首页</a>');
+		}
+
 		// 检查密码
 		$hashPassword = do_hash(do_hash($password) . $userInfo['salt']);
 

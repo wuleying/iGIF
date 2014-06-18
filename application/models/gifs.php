@@ -40,4 +40,26 @@ class Gifs extends CI_Model
 		));
 		return $this->db->insert_id();
 	}
+
+	/**
+	 * 获取图片
+	 *
+	 * @param integer $status
+	 * @return array
+	 *
+	 */
+	public function getGifs($status = IMAGE_STATUS_PENDING)
+	{
+		$query = $this->db->get_where('gifs', array(
+			'status' => $status
+				), 20);
+
+		$gifs = array();
+		foreach ($query->result() as $row)
+		{
+			$gifs[] = $row;
+		}
+		return $gifs;
+	}
+
 }

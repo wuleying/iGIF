@@ -14,6 +14,8 @@ class User extends CI_Controller
 
 	// 用户信息
 	private $_userInfo = array();
+	// 模板数据
+	private $_data = array();
 
 	/**
 	 * 构造函数
@@ -38,34 +40,13 @@ class User extends CI_Controller
 		}
 		else
 		{
-
-
-			// 排除页面
-			$exclude = array(
-				'upload',
-				'doadd'
-			);
-
-			$data['userInfo'] = & $this->_userInfo;
-
-
-			if (!in_array($this->router->method, $exclude))
+			// 封禁用户
+			if (USER_GROUP_BAN == $this->_userInfo['groupid'])
 			{
-				// 页面标题
-				$titles = array(
-					'index' => '用户首页',
-					'add' => '上传',
-					'profiled' => '账号',
-					'password' => '修改密码',
-					'uploads' => '我的上传',
-					'favorites' => '我的收藏',
-				);
-
-				$data['title'] = (isset($titles[$this->router->method])) ? $titles[$this->router->method] : '';
-				unset($titles);
-				// 加载头部模板
-				$this->load->view('layout/header', $data);
+				redirect(base_url('/logout'));
 			}
+
+			$this->_data['userInfo'] = & $this->_userInfo;
 		}
 	}
 
@@ -75,6 +56,8 @@ class User extends CI_Controller
 	 */
 	public function index()
 	{
+		$this->_data['title'] = '用户首页';
+		$this->load->view('layout/header', $this->_data);
 		$this->load->view('user/index');
 	}
 
@@ -84,6 +67,8 @@ class User extends CI_Controller
 	 */
 	public function add()
 	{
+		$this->_data['title'] = '上传';
+		$this->load->view('layout/header', $this->_data);
 		$this->load->view('user/add');
 	}
 
@@ -124,7 +109,7 @@ class User extends CI_Controller
 	 */
 	public function addsuccess()
 	{
-		show_error('提交成功能，请耐心等待审核，请<a href="' . base_url('/user/add') . '">返回</a>');
+		show_error('提交成功，请耐心等待审核，<a href="' . base_url('/user/add') . '">返回</a>');
 	}
 
 	/**
@@ -156,6 +141,14 @@ class User extends CI_Controller
 		{
 			$ext = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
 		}
+
+		// 只允许上传GIF格式文件 @todo 需要优化
+		if ('gif' != $ext)
+		{
+			echo json_encode(array('error' => array('code' => 104, 'message' => 'File extension error')));
+			exit();
+		}
+
 		$file = $fileDir . DS . TIME_NOW . '.' . $ext;
 		$filePath = $this->config->item('attachment_dir') . DS . $file;
 
@@ -164,6 +157,7 @@ class User extends CI_Controller
 		if (!$out = @fopen("{$filePath}.part", $chunks ? "ab" : "wb"))
 		{
 			echo json_encode(array('error' => array('code' => 102, 'message' => 'Failed to open output stream')));
+			exit();
 		}
 
 		if (!empty($_FILES))
@@ -171,11 +165,13 @@ class User extends CI_Controller
 			if ($_FILES["file"]["error"] || !is_uploaded_file($_FILES["file"]["tmp_name"]))
 			{
 				echo json_encode(array('error' => array('code' => 103, 'message' => 'Failed to move uploaded file.')));
+				exit();
 			}
 
 			if (!$in = @fopen($_FILES["file"]["tmp_name"], "rb"))
 			{
 				echo json_encode(array('error' => array('code' => 101, 'message' => 'Failed to open input stream.')));
+				exit();
 			}
 		}
 		else
@@ -183,6 +179,7 @@ class User extends CI_Controller
 			if (!$in = @fopen("php://input", "rb"))
 			{
 				echo json_encode(array('error' => array('code' => 101, 'message' => 'Failed to open input stream.')));
+				exit();
 			}
 		}
 
@@ -209,6 +206,7 @@ class User extends CI_Controller
 	public function profiled()
 	{
 		$action = (int) $this->input->post('action');
+		$this->_data['title'] = '账号';
 
 		// 用户提交数据
 		if ($action)
@@ -229,6 +227,7 @@ class User extends CI_Controller
 
 			if ($this->form_validation->run() == FALSE)
 			{
+				$this->load->view('layout/header', $this->_data);
 				$this->load->view('user/profiled');
 			}
 			else
@@ -246,8 +245,8 @@ class User extends CI_Controller
 		}
 		else
 		{
-			$data['userInfo'] = & $this->_userInfo;
-			$this->load->view('user/profiled', $data);
+			$this->load->view('layout/header', $this->_data);
+			$this->load->view('user/profiled', $this->_data);
 		}
 	}
 
@@ -258,6 +257,8 @@ class User extends CI_Controller
 	public function password()
 	{
 		$action = (int) $this->input->post('action');
+
+		$this->_data['title'] = '密码';
 
 		// 用户提交数据
 		if ($action)
@@ -274,6 +275,7 @@ class User extends CI_Controller
 
 			if ($this->form_validation->run() == FALSE)
 			{
+				$this->load->view('layout/header', $this->_data);
 				$this->load->view('user/password');
 			}
 			else
@@ -283,6 +285,7 @@ class User extends CI_Controller
 		}
 		else
 		{
+			$this->load->view('layout/header', $this->_data);
 			$this->load->view('user/password');
 		}
 	}
@@ -296,7 +299,7 @@ class User extends CI_Controller
 		$oldPassword = $this->input->post('oldpassword', TRUE);
 		if (empty($oldPassword))
 		{
-			show_error('非法请求');
+			return FALSE;
 		}
 
 		// 检查密码
@@ -323,15 +326,19 @@ class User extends CI_Controller
 	 */
 	public function uploads()
 	{
+		$this->_data['title'] = '我的上传';
+		$this->load->view('layout/header', $this->_data);
 		$this->load->view('user/uploads');
 	}
 
 	/**
-	 *  我的上传
+	 *  我的收藏
 	 *
 	 */
 	public function favorites()
 	{
+		$this->_data['title'] = '我的收藏';
+		$this->load->view('layout/header', $this->_data);
 		$this->load->view('user/favorites');
 	}
 

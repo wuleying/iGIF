@@ -46,6 +46,7 @@ $route['404_override'] = '';
 $route['hot'] = "home/hot";
 $route['add'] = "user/add";
 $route['upload'] = "user/upload";
+$route['admin'] = "admin/review";
 
 
 /* End of file routes.php */
