@@ -363,12 +363,18 @@ $config['proxy_ips'] = '';
 
 /*
   |--------------------------------------------------------------------------
-  | Custom
+  | Attachment
   |--------------------------------------------------------------------------
   |
   |
  */
+// 附件目录
 $config['attachment_dir'] = 'D:' . DS . 'attachment' . DS . 'iGIF';
+// 图片服务器地址
+$config['image_cache_url'] = 'http://img0.cache.gif.test';
+// 充许上传的文件格式
+$config['image_allow_extension'] = array('gif', 'png');
+
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

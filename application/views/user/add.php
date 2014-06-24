@@ -30,7 +30,7 @@
 		filters: {
 			max_file_size: '10mb',
 			mime_types: [
-				{title: "Image files", extensions: "gif"},
+				{title: "Image files", extensions: "gif,png"},
 			]
 		},
 		init: {

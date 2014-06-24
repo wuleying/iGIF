@@ -17,7 +17,24 @@ class MY_String
 	 */
 	public function makeUserDir($userid)
 	{
-		return implode(DS, str_split(sprintf('%08d', $userid), 2));
+		return implode('/', str_split(sprintf('%08d', $userid), 2));
+	}
+
+	/**
+	 * 生成图片地址
+	 *
+	 * @param string $imagePath
+	 * @return string
+	 */
+	public function imageCacheUrl($imagePath, $thubm = TRUE)
+	{
+		if ($thubm)
+		{
+			$imageInfo = pathinfo($imagePath);
+			$imagePath = $imageInfo['dirname'] . '/' . $imageInfo['filename'] . '_thumb.' . $imageInfo['extension'];
+		}
+
+		return config_item('image_cache_url') . '/' . $imagePath;
 	}
 
 }

@@ -124,11 +124,10 @@ class User extends CI_Controller
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 		@set_time_limit(300);
-		$this->load->library('string');
 		// 用户目录 /00/00/00/01/2014/06
-		$fileDir = $this->string->makeUserDir($this->_userInfo['userid']) . DS . mdate('%Y', TIME_NOW) . DS . mdate('%m', TIME_NOW) . DS . mdate('%d', TIME_NOW);
-		;
-		$targetDir = $this->config->item('attachment_dir') . DS . $fileDir;
+		$fileDir = $this->string->makeUserDir($this->_userInfo['userid']) . '/' . mdate('%Y/%m/%d', TIME_NOW);
+
+		$targetDir = $this->config->item('attachment_dir') . '/' . $fileDir;
 		if (!file_exists($targetDir))
 		{
 			@mkdir($targetDir, DIR_READ_MODE, TRUE);
@@ -142,15 +141,15 @@ class User extends CI_Controller
 			$ext = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
 		}
 
-		// 只允许上传GIF格式文件 @todo 需要优化
-		if ('gif' != $ext)
+		// 文件格式不正确
+		if (!in_array($ext, $this->config->item('image_allow_extension')))
 		{
 			echo json_encode(array('error' => array('code' => 104, 'message' => 'File extension error')));
 			exit();
 		}
 
-		$file = $fileDir . DS . TIME_NOW . '.' . $ext;
-		$filePath = $this->config->item('attachment_dir') . DS . $file;
+		$file = $fileDir . '/' . TIME_NOW . '.' . $ext;
+		$filePath = $this->config->item('attachment_dir') . '/' . $file;
 
 		$chunk = isset($_REQUEST["chunk"]) ? (int) $_REQUEST["chunk"] : 0;
 		$chunks = isset($_REQUEST["chunks"]) ? (int) $_REQUEST["chunks"] : 0;
@@ -194,6 +193,18 @@ class User extends CI_Controller
 		if (!$chunks || $chunk == $chunks - 1)
 		{
 			rename("{$filePath}.part", $filePath);
+		}
+
+		// 生成缩略图
+		$config['image_library'] = 'gd2';
+		$config['source_image'] = $filePath;
+		$config['create_thumb'] = TRUE;
+		$config['maintain_ratio'] = TRUE;
+		$config['width'] = 300;
+		$this->load->library('image_lib', $config);
+		if (!$this->image_lib->resize())
+		{
+			echo $this->image_lib->display_errors();
 		}
 
 		echo json_encode(array('path' => $file));
