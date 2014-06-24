@@ -48,9 +48,6 @@ define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
  */
 // 目录分隔符
 define('DS', DIRECTORY_SEPARATOR);
-// 当前时间
-define('TIME_NOW', time());
-
 /*
   |--------------------------------------------------------------------------
   | User group id

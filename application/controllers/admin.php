@@ -51,7 +51,21 @@ class Admin extends CI_Controller
 	{
 		// 加载模型
 		$this->load->model('Gifs');
-		$this->_data['gifs'] = $this->Gifs->getGifs();
+		$this->_data['images'] = $this->Gifs->getGifs();
+
+		$this->_data['users'] = array();
+		// 获取用户ID
+		if (!empty($this->_data['images']))
+		{
+			$userids = array();
+			foreach ($this->_data['images'] as $gif)
+			{
+				$userids[] = $gif['userid'];
+			}
+			$userids = array_unique($userids);
+
+			$this->_data['users'] = $this->Users->getUserInfoByIds($userids);
+		}
 
 		$this->_data['title'] = '审核图片';
 		$this->load->view('layout/header', $this->_data);
@@ -68,4 +82,5 @@ class Admin extends CI_Controller
 		$this->load->view('layout/header', $this->_data);
 		$this->load->view('user/index');
 	}
+
 }

@@ -106,4 +106,29 @@ class Users extends CI_Model
 		$this->db->update('users', $data);
 	}
 
+	/**
+	 * 根据用户ID获取用户信息
+	 *
+	 * @param type $userids
+	 * @return type
+	 *
+	 */
+	public function getUserInfoByIds($userids)
+	{
+		if (empty($userids))
+		{
+			return array();
+		}
+
+		$this->db->select('userid, username, email, urltoken');
+		$this->db->where_in('userid', $userids);
+		$query = $this->db->get('users');
+		$users = array();
+		foreach ($query->result() as $row)
+		{
+			$users[$row->userid] = $row;
+		}
+		return $users;
+	}
+
 }

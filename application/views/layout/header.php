@@ -12,7 +12,7 @@
 	</head>
 	<body>
 
-		<div>
+		<div class="clearfix">
 			<nav class="navbar navbar-default navbar-static-top" role="navigation">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="<?php echo base_url(); ?>">iGIF</a>

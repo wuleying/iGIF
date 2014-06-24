@@ -57,10 +57,11 @@ class Gifs extends CI_Model
 		$gifs = array();
 		foreach ($query->result() as $row)
 		{
-			//$gifs[] = $row;
 			$gifs[$row->gifid] = array(
+				'userid' => $row->userid,
 				'path' => $this->string->imageCacheUrl($row->path),
-				'description' => $row->description
+				'description' => $row->description,
+				'dateline' => $row->dateline,
 			);
 		}
 		return $gifs;
