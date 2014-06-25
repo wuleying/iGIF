@@ -37,4 +37,16 @@ class MY_String
 		return config_item('image_cache_url') . '/' . $imagePath;
 	}
 
+	/**
+	 * 输出JSON格式数据
+	 *
+	 * @param array $data
+	 *
+	 */
+	public function outputJSON($data)
+	{
+		echo json_encode($data);
+		die();
+	}
+
 }

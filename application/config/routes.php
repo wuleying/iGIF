@@ -44,6 +44,8 @@ if (!defined('BASEPATH'))
 $route['default_controller'] = "home";
 $route['404_override'] = '';
 $route['hot'] = "home/hot";
+$route['view/(:num)'] = "home/view/$1";
+$route['people/(:any)'] = "home/people/$1";
 $route['add'] = "user/add";
 $route['upload'] = "user/upload";
 $route['admin'] = "admin/review";

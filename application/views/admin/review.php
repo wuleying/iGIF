@@ -1,22 +1,30 @@
-
-<div class="margin12">
-
-	<script type="text/javascript">
-		function review(imageid, status)
+<script type="text/javascript">
+	function review(imageid, status)
+	{
+		if (<?php echo IMAGE_STATUS_FAILED ?> == status)
 		{
-			if (<?php echo IMAGE_STATUS_FAILED ?> == status)
+			if (!confirm("您确定要执行？"))
 			{
-				if (!confirm("您确定要执行？"))
+				return FALSE;
+			}
+		}
+
+		$.ajax({
+			type: "GET",
+			url: "<?php echo base_url(); ?>admin/doreview/" + imageid + "/" + status,
+			success: function(data) {
+				var result = eval('(' + data + ')');
+				if (200 == result.code)
 				{
-					return FALSE;
+					$("#image-" + imageid).fadeOut("slow");
 				}
 			}
-			$("#image-" + imageid).fadeOut("slow");
-			return false;
-		}
-	</script>
+		});
+		return false;
+	}
+</script>
 
-
+<div class="margin12">
 	<?php if (empty($images)) : ?>
 		<div class="alert alert-info text-center">无数据</div>
 	<?php else: ?>
@@ -44,4 +52,5 @@
 		<?php endforeach; ?>
 	<?php endif; ?>
 </div>
+
 <?php $this->load->view('layout/footer'); ?>

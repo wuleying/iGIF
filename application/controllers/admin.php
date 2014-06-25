@@ -49,6 +49,9 @@ class Admin extends CI_Controller
 	 */
 	public function review()
 	{
+		$this->_data['title'] = '审核图片';
+		$this->load->view('layout/header', $this->_data);
+
 		// 加载模型
 		$this->load->model('Gifs');
 		$this->_data['images'] = $this->Gifs->getGifs();
@@ -67,9 +70,36 @@ class Admin extends CI_Controller
 			$this->_data['users'] = $this->Users->getUserInfoByIds($userids);
 		}
 
-		$this->_data['title'] = '审核图片';
-		$this->load->view('layout/header', $this->_data);
 		$this->load->view('admin/review', $this->_data);
+	}
+
+	/**
+	 * 执行审核
+	 *
+	 * @param integer $id
+	 * @param integer $status
+	 *
+	 */
+	public function doreview($id, $status)
+	{
+		$id = (int) $id;
+		$status = (int) $status;
+
+		if (empty($id) || empty($status))
+		{
+			$this->string->outputJSON(array('code' => 400, 'message' => '参数不正确'));
+		}
+
+		// 加载模型
+		$this->load->model('Gifs');
+		if ($this->Gifs->reviewStatus($id, $status))
+		{
+			$this->string->outputJSON(array('code' => 200, 'message' => '审核成功'));
+		}
+		else
+		{
+			$this->string->outputJSON(array('code' => 401, 'message' => '审核失败'));
+		}
 	}
 
 	/**

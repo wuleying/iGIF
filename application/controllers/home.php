@@ -12,6 +12,11 @@ if (!defined('BASEPATH'))
 class Home extends CI_Controller
 {
 
+	// 用户信息
+	private $_userInfo = array();
+	// 模板数据
+	private $_data = array();
+
 	/**
 	 * 构造函数
 	 *
@@ -24,24 +29,15 @@ class Home extends CI_Controller
 		$email = $this->input->cookie('email');
 		$password = $this->input->cookie('password');
 
+		// 加载模型
 		$this->load->model('Users');
+		$this->load->model('Gifs');
+
 		$this->_userInfo = $this->Users->getUserByEmail($email);
-		$data['userInfo'] = array();
 		if ($this->_userInfo && $this->_userInfo['password'] == $password)
 		{
-			$data['userInfo'] = $this->_userInfo;
+			$this->_data['userInfo'] = & $this->_userInfo;
 		}
-
-		// 页面标题
-		$titles = array(
-			'index' => '最新',
-			'hot' => '热门'
-		);
-		$data['title'] = $titles[$this->router->method];
-		unset($titles);
-
-		// 加载头部模板
-		$this->load->view('layout/header', $data);
 	}
 
 	/**
@@ -50,7 +46,27 @@ class Home extends CI_Controller
 	 */
 	public function index()
 	{
-		$this->load->view('home/index');
+		$this->_data['title'] = '最新';
+		$this->load->view('layout/header', $this->_data);
+
+		// 最新数据
+		$this->_data['images'] = $this->Gifs->getGifs(IMAGE_STATUS_REVIEWED);
+		$this->_data['users'] = array();
+		// 获取用户ID
+		if (!empty($this->_data['images']))
+		{
+			$userids = array();
+			foreach ($this->_data['images'] as $gif)
+			{
+				$userids[] = $gif['userid'];
+			}
+			$userids = array_unique($userids);
+
+			$this->_data['users'] = $this->Users->getUserInfoByIds($userids);
+		}
+
+
+		$this->load->view('home/index', $this->_data);
 	}
 
 	/**
@@ -59,6 +75,28 @@ class Home extends CI_Controller
 	 */
 	public function hot()
 	{
+		$this->_data['title'] = '最热';
+		$this->load->view('layout/header', $this->_data);
+		$this->load->view('home/hot');
+	}
+
+	/**
+	 * 查看图片
+	 *
+	 * @param integer $id
+	 *
+	 */
+	public function view($id)
+	{
+		$this->_data['title'] = '';
+		$this->load->view('layout/header', $this->_data);
+		$this->load->view('home/hot');
+	}
+
+	public function people($username)
+	{
+		$this->_data['title'] = '';
+		$this->load->view('layout/header', $this->_data);
 		$this->load->view('home/hot');
 	}
 
