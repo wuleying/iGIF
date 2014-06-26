@@ -1,4 +1,4 @@
-<div class="margin12">
+<div class="margin12 clearfix">
 	<?php if (empty($images)) : ?>
 		<div class="alert alert-info text-center">无数据</div>
 	<?php else: ?>
@@ -26,6 +26,10 @@
 			</div>
 		<?php endforeach; ?>
 	<?php endif; ?>
+</div>
+
+<div class="text-center clearfix">
+	<?php echo $pagination; ?>
 </div>
 
 <?php $this->load->view('layout/footer'); ?>

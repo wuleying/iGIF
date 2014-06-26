@@ -376,5 +376,44 @@ $config['image_cache_url'] = 'http://img0.cache.gif.test';
 $config['image_allow_extension'] = array('gif', 'png');
 
 
+/*
+  |--------------------------------------------------------------------------
+  | Pagination
+  |--------------------------------------------------------------------------
+  |
+  |
+ */
+// 默认每页分页数量
+$config['pagination']['per_page'] = 20;
+// 当前页左右数量
+$config['pagination']['num_links'] = 5;
+// 显示当前页码
+$config['pagination']['use_page_numbers'] = TRUE;
+// 分页前后标签
+$config['pagination']['full_tag_open'] = '<ul class="pagination">';
+$config['pagination']['full_tag_close'] = '</ul>';
+// 起始链接
+$config['pagination']['first_link'] = '第一';
+$config['pagination']['first_tag_open'] = '<li>';
+$config['pagination']['first_tag_close'] = '</li>';
+// 结束链接
+$config['pagination']['last_link'] = '末页';
+$config['pagination']['last_tag_open'] = '<li>';
+$config['pagination']['last_tag_close'] = '</li>';
+// 上一页
+$config['pagination']['prev_link'] = '上一页';
+$config['pagination']['prev_tag_open'] = '<li>';
+$config['pagination']['prev_tag_close'] = '</li>';
+// 下一页
+$config['pagination']['next_link'] = '下一页';
+$config['pagination']['next_tag_open'] = '<li>';
+$config['pagination']['next_tag_close'] = '</li>';
+// 当前页
+$config['pagination']['cur_tag_open'] = '<li class="active"><a href="#">';
+$config['pagination']['cur_tag_close'] = '</a></li>';
+// 数字链接
+$config['pagination']['num_tag_open'] = '<li>';
+$config['pagination']['num_tag_close'] = '</li>';
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */

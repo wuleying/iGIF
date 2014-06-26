@@ -48,11 +48,20 @@ class Gifs extends CI_Model
 	 * @return array
 	 *
 	 */
-	public function getGifs($status = IMAGE_STATUS_PENDING, $orderby='', $offset = 0, $limit = 20)
+	public function getGifs($status = IMAGE_STATUS_PENDING, $orderby = '', $offset = 0, $limit = 20)
 	{
 		$query = $this->db->get_where('gifs', array(
 			'status' => $status
 				), $limit, $offset);
+
+		if ($orderby)
+		{
+			$orderbyArray = explode(' ', $orderby);
+			if (!empty($orderbyArray))
+			{
+				//$this->db->order_by($orderbyArray[0], $orderbyArray[1]);
+			}
+		}
 
 		$gifs = array();
 		foreach ($query->result() as $row)
@@ -65,6 +74,21 @@ class Gifs extends CI_Model
 			);
 		}
 		return $gifs;
+	}
+
+	/**
+	 * 获取图片数量
+	 *
+	 * @param integer $status
+	 * @return integer
+	 *
+	 */
+	public function getGifsTotal($status = IMAGE_STATUS_PENDING)
+	{
+		$this->db->select('COUNT(*) AS total');
+		$this->db->where('status', $status);
+		$query = $this->db->get('gifs');
+		return (int) $query->row_array()['total'];
 	}
 
 	/**

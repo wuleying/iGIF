@@ -44,13 +44,25 @@ class Home extends CI_Controller
 	 * 首页
 	 *
 	 */
-	public function index()
+	public function index($page = 1)
 	{
 		$this->_data['title'] = '最新';
 		$this->load->view('layout/header', $this->_data);
 
+		// 分页
+		$page = (int) max(1, $page);
+		$this->load->library('pagination');
+		$pageConfig = config_item('pagination');
+		$pageConfig['base_url'] = base_url('home/index/');
+
+		// 获取图片数量
+		$pageConfig['total_rows'] = $this->Gifs->getGifsTotal(IMAGE_STATUS_REVIEWED);
+
+		// 计算偏移量
+		$offset = ($page - 1) * $pageConfig['per_page'];
+
 		// 最新数据
-		$this->_data['images'] = $this->Gifs->getGifs(IMAGE_STATUS_REVIEWED);
+		$this->_data['images'] = $this->Gifs->getGifs(IMAGE_STATUS_REVIEWED, 'reviewdateline DESC', $offset, $pageConfig['per_page']);
 		$this->_data['users'] = array();
 		// 获取用户ID
 		if (!empty($this->_data['images']))
@@ -65,6 +77,8 @@ class Home extends CI_Controller
 			$this->_data['users'] = $this->Users->getUserInfoByIds($userids);
 		}
 
+		$this->pagination->initialize($pageConfig);
+		$this->_data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('home/index', $this->_data);
 	}
@@ -73,11 +87,43 @@ class Home extends CI_Controller
 	 * 热门
 	 *
 	 */
-	public function hot()
+	public function hot($page = 1)
 	{
-		$this->_data['title'] = '最热';
+		$this->_data['title'] = '热门';
 		$this->load->view('layout/header', $this->_data);
-		$this->load->view('home/hot');
+
+		// 分页
+		$page = (int) max(1, $page);
+		$this->load->library('pagination');
+		$pageConfig = config_item('pagination');
+		$pageConfig['base_url'] = base_url('home/index/');
+
+		// 获取图片数量
+		$pageConfig['total_rows'] = $this->Gifs->getGifsTotal(IMAGE_STATUS_REVIEWED);
+
+		// 计算偏移量
+		$offset = ($page - 1) * $pageConfig['per_page'];
+
+		// 最新数据
+		$this->_data['images'] = $this->Gifs->getGifs(IMAGE_STATUS_REVIEWED, 'reviewdateline DESC', $offset, $pageConfig['per_page']);
+		$this->_data['users'] = array();
+		// 获取用户ID
+		if (!empty($this->_data['images']))
+		{
+			$userids = array();
+			foreach ($this->_data['images'] as $gif)
+			{
+				$userids[] = $gif['userid'];
+			}
+			$userids = array_unique($userids);
+
+			$this->_data['users'] = $this->Users->getUserInfoByIds($userids);
+		}
+
+		$this->pagination->initialize($pageConfig);
+		$this->_data['pagination'] = $this->pagination->create_links();
+
+		$this->load->view('home/index', $this->_data);
 	}
 
 	/**
@@ -90,14 +136,14 @@ class Home extends CI_Controller
 	{
 		$this->_data['title'] = '';
 		$this->load->view('layout/header', $this->_data);
-		$this->load->view('home/hot');
+		$this->load->view('home/view');
 	}
 
 	public function people($username)
 	{
 		$this->_data['title'] = '';
 		$this->load->view('layout/header', $this->_data);
-		$this->load->view('home/hot');
+		$this->load->view('home/people');
 	}
 
 }
