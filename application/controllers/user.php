@@ -200,12 +200,17 @@ class User extends CI_Controller
 		$config['source_image'] = $filePath;
 		$config['create_thumb'] = TRUE;
 		$config['maintain_ratio'] = TRUE;
-		$config['width'] = 300;
+		$config['master_dim'] = 'width';
 		$this->load->library('image_lib', $config);
-		if (!$this->image_lib->resize())
-		{
-			echo $this->image_lib->display_errors();
-		}
+		$config['wm_text'] = 'iGIF';
+		$config['wm_type'] = 'text';
+		$config['wm_font_size'] = '16';
+		$config['wm_font_color'] = 'ffffff';
+		$config['wm_vrt_alignment'] = 'bottom';
+		$config['wm_hor_alignment'] = 'center';
+		$config['wm_padding'] = '20';
+		$this->image_lib->initialize($config);
+		$this->image_lib->watermark();
 
 		echo json_encode(array('path' => $file));
 	}

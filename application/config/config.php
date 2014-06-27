@@ -384,7 +384,7 @@ $config['image_allow_extension'] = array('gif', 'png');
   |
  */
 // 默认每页分页数量
-$config['pagination']['per_page'] = 20;
+$config['pagination']['per_page'] = 5;
 // 当前页左右数量
 $config['pagination']['num_links'] = 5;
 // 显示当前页码

@@ -134,11 +134,24 @@ class Home extends CI_Controller
 	 */
 	public function view($id)
 	{
-		$this->_data['title'] = '';
+		$this->_data['image']  = $this->Gifs->getGifById($id);
+
+		if (empty($this->_data['image']) || (IMAGE_STATUS_PENDING == $this->_data['image']['status'] && USER_GROUP_ADMIN != $this->_userInfo['groupid']))
+		{
+			show_error('图片不存在或正在审核中，<a href="' . base_url() . '">返回首页</a>');
+		}
+
+		$this->_data['title'] = $this->_data['image']['description'];
 		$this->load->view('layout/header', $this->_data);
-		$this->load->view('home/view');
+		$this->load->view('home/view', $this->_data);
 	}
 
+	/**
+	 * 用户信息页
+	 *
+	 * @param string $username
+	 *
+	 */
 	public function people($username)
 	{
 		$this->_data['title'] = '';

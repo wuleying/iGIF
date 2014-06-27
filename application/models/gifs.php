@@ -50,18 +50,18 @@ class Gifs extends CI_Model
 	 */
 	public function getGifs($status = IMAGE_STATUS_PENDING, $orderby = '', $offset = 0, $limit = 20)
 	{
-		$query = $this->db->get_where('gifs', array(
-			'status' => $status
-				), $limit, $offset);
-
 		if ($orderby)
 		{
 			$orderbyArray = explode(' ', $orderby);
 			if (!empty($orderbyArray))
 			{
-				//$this->db->order_by($orderbyArray[0], $orderbyArray[1]);
+				$this->db->order_by($orderbyArray[0], $orderbyArray[1]);
 			}
 		}
+
+		$query = $this->db->get_where('gifs', array(
+			'status' => $status
+				), $limit, $offset);
 
 		$gifs = array();
 		foreach ($query->result() as $row)
@@ -73,7 +73,28 @@ class Gifs extends CI_Model
 				'dateline' => $row->dateline,
 			);
 		}
+		unset($query);
 		return $gifs;
+	}
+
+	/**
+	 * 根据ID获取图片信息
+	 *
+	 * @param integer $id
+	 * @return array
+	 *
+	 */
+	public function getGifById($id)
+	{
+		if(empty($id))
+		{
+			return array();
+		}
+
+		$query = $this->db->get_where('gifs', array(
+			'gifid' => $id
+				), 1);
+		return $query->row_array();
 	}
 
 	/**
