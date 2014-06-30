@@ -106,11 +106,56 @@ class Admin extends CI_Controller
 	 * 管理用户
 	 *
 	 */
-	public function users()
+	public function users($id = 0)
 	{
 		$this->_data['title'] = '管理用户';
 		$this->load->view('layout/header', $this->_data);
-		$this->load->view('user/index');
+
+		if ($id)
+		{
+			// 查询用户
+			$queryUser = $this->Users->getUserInfoByIds(array($id));
+
+			if (empty($queryUser[$id]))
+			{
+				show_error('用户不存在，<a href="' . base_url('/admin/users') . '">返回</a>');
+			}
+
+			$this->_data['currentUser'] = $queryUser[$id];
+		}
+
+		// 加载模型
+		$this->load->model('Groups');
+		$this->_data['groups'] = $this->Groups->getGroups();
+		$this->load->view('admin/users', $this->_data);
+	}
+
+	/**
+	 * 修改用户信息
+	 *
+	 */
+	public function changeuser()
+	{
+		$id = (int) $this->input->post('id');
+		$email = $this->input->post('email');
+		$groupid = (int) $this->input->post('groupid');
+
+		if (empty($email) || empty($groupid))
+		{
+			show_error('请选择一个用户，<a href="' . base_url('/admin/users') . '">返回</a>');
+		}
+
+		// 查询用户
+		$currentUser = $this->Users->getUserByEmail($email);
+		if (empty($currentUser))
+		{
+			$url = '/admin/users' . ($id ? ('/' . $id) : '');
+			show_error('用户不存在，<a href="' . base_url($url) . '">返回</a>');
+		}
+
+		// 修改用户组
+		$this->Users->changeGroup($currentUser['userid'], $groupid);
+		redirect(base_url('/admin/users/' . $currentUser['userid']));
 	}
 
 }

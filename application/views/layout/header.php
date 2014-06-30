@@ -23,7 +23,7 @@
 						<li<?php if ('home' == $this->router->class && 'hot' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/hot'); ?>">热门</a></li>
 
 						<?php if (isset($userInfo) && !empty($userInfo)) : ?>
-							<li<?php if ('user' == $this->router->class && 'add' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/add'); ?>">上传</a></li>
+							<li<?php if ('user' == $this->router->class && 'upload' == $this->router->method): ?> class="active"<?php endif; ?>><a href="<?php echo base_url('/upload'); ?>">上传</a></li>
 
 							<?php if (USER_GROUP_ADMIN == $userInfo['groupid']) : ?>
 								<li class="dropdown">
@@ -36,7 +36,7 @@
 							<?php endif; ?>
 
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $userInfo['email']; ?><b class="caret"></b></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $userInfo['username'] ? $userInfo['username'] : $userInfo['email']; ?><b class="caret"></b></a>
 								<ul class="dropdown-menu" role="menu">
 									<li><a href="<?php echo base_url('/user/uploads'); ?>">我的上传</a></li>
 									<li><a href="<?php echo base_url('/user/favorites'); ?>">我的收藏</a></li>

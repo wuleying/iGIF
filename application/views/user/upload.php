@@ -1,11 +1,11 @@
 <script type="text/javascript" src="<?php echo base_url('/js/plupload/plupload.full.min.js'); ?>"></script>
 <div class="well well-lg margin12">
-	<form method="post" action="<?php echo base_url('/user/doadd'); ?>" onsubmit="return checkForm();">
+	<form method="post" action="<?php echo base_url('/user/doupload'); ?>" onsubmit="return checkForm();">
 		<input type="hidden" name="path" id="gifpath" value="" />
 		<p class="uploader-box">
 		<div id="filelist"></div>
 		<div id="container">
-			<button id="pickfiles" class="btn btn-primary">选择图片</button>
+			<button id="pickfiles" class="btn btn-warning">选择图片</button>
 		</div>
 		<div id="console"></div>
 		</p>
@@ -23,7 +23,7 @@
 			runtimes: 'html5,flash,silverlight,html4',
 			browse_button: 'pickfiles',
 			container: document.getElementById('container'),
-			url: '<?php echo base_url('/upload'); ?>',
+			url: '<?php echo base_url('/uploadimage'); ?>',
 			flash_swf_url: '<?php echo base_url('/js/plupload/Moxie.swf'); ?>',
 			silverlight_xap_url: '<?php echo base_url('/js/plupload/Moxie.xap'); ?>',
 			filters: {

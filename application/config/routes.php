@@ -46,8 +46,9 @@ $route['404_override'] = '';
 $route['hot'] = "home/hot";
 $route['view/(:num)'] = "home/view/$1";
 $route['people/(:any)'] = "home/people/$1";
-$route['add'] = "user/add";
 $route['upload'] = "user/upload";
+$route['uploadimage'] = "user/uploadimage";
+$route['uploadsuccess'] = "user/uploadsuccess";
 $route['admin'] = "admin/review";
 
 

@@ -65,41 +65,41 @@ class User extends CI_Controller
 	 * 上传
 	 *
 	 */
-	public function add()
+	public function upload()
 	{
 		$this->_data['title'] = '上传';
 		$this->load->view('layout/header', $this->_data);
-		$this->load->view('user/add');
+		$this->load->view('user/upload');
 	}
 
 	/**
 	 * 提交数据
 	 *
 	 */
-	public function doadd()
+	public function doupload()
 	{
 		$path = $this->input->post('path');
 		$description = $this->input->post('description');
 
 		if (empty($path))
 		{
-			show_error('请上传图片，请<a href="' . base_url('/user/add') . '">返回</a>');
+			show_error('请上传图片，请<a href="' . base_url('/upload') . '">返回</a>');
 		}
 
 		if (empty($description))
 		{
-			show_error('请填写简介，请<a href="' . base_url('/user/add') . '">返回</a>');
+			show_error('请填写简介，请<a href="' . base_url('/upload') . '">返回</a>');
 		}
 
 		$gifid = $this->Gifs->newGif($this->_userInfo['userid'], $path, $description);
 
 		if (empty($gifid))
 		{
-			show_error('提交失败，请<a href="' . base_url('/user/add') . '">返回</a>');
+			show_error('提交失败，请<a href="' . base_url('/upload') . '">返回</a>');
 		}
 		else
 		{
-			redirect('/user/addsuccess');
+			redirect(base_url('/uploadsuccess'));
 		}
 	}
 
@@ -107,16 +107,16 @@ class User extends CI_Controller
 	 * 提交成功
 	 *
 	 */
-	public function addsuccess()
+	public function uploadsuccess()
 	{
-		show_error('提交成功，请耐心等待审核，<a href="' . base_url('/user/add') . '">返回</a>');
+		show_error('提交成功，请耐心等待审核，<a href="' . base_url('/upload') . '">返回</a>');
 	}
 
 	/**
 	 * 上传图片
 	 *
 	 */
-	public function upload()
+	public function uploadimage()
 	{
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");

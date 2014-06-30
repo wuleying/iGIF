@@ -62,6 +62,51 @@ class Users extends CI_Model
 	}
 
 	/**
+	 * 根据用户名获取用户信息
+	 *
+	 * @param string $username
+	 * @return array
+	 *
+	 */
+	public function getUserByName($username)
+	{
+		if (empty($username))
+		{
+			return array();
+		}
+
+		$query = $this->db->get_where('users', array(
+			'username' => $username
+				), 1);
+		return $query->row_array();
+	}
+
+	/**
+	 * 根据用户ID获取用户信息
+	 *
+	 * @param type $userids
+	 * @return type
+	 *
+	 */
+	public function getUserInfoByIds($userids)
+	{
+		if (empty($userids))
+		{
+			return array();
+		}
+
+		$this->db->select('userid, groupid, username, email, urltoken');
+		$this->db->where_in('userid', $userids);
+		$query = $this->db->get('users');
+		$users = array();
+		foreach ($query->result() as $row)
+		{
+			$users[$row->userid] = $row;
+		}
+		return $users;
+	}
+
+	/**
 	 * 保存用户信息
 	 *
 	 * @param integer $userid
@@ -107,28 +152,22 @@ class Users extends CI_Model
 	}
 
 	/**
-	 * 根据用户ID获取用户信息
+	 * 修改用户组
 	 *
-	 * @param type $userids
-	 * @return type
+	 * @param integer $userid
+	 * @param integer $groupid
+	 * @return
 	 *
 	 */
-	public function getUserInfoByIds($userids)
+	public function changeGroup($userid, $groupid)
 	{
-		if (empty($userids))
+		if (empty($userid) || empty($groupid))
 		{
-			return array();
+			return;
 		}
-
-		$this->db->select('userid, username, email, urltoken');
-		$this->db->where_in('userid', $userids);
-		$query = $this->db->get('users');
-		$users = array();
-		foreach ($query->result() as $row)
-		{
-			$users[$row->userid] = $row;
-		}
-		return $users;
+		$data['groupid'] = $groupid;
+		$this->db->where('userid', $userid);
+		$this->db->update('users', $data);
 	}
 
 }
